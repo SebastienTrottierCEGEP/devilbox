@@ -501,9 +501,31 @@ services:
   # ------------------------------------------------------------
   # Neo4j
   # ------------------------------------------------------------
+  # Init container to fetch the DozerDB extension (Open-source plug-in to allow Enterprise features in Community Edition) 
+  # and place it in the plugins directory before Neo4j starts
+  # https://github.com/DozerDB/dozerdb-plugin
+  # To validate install, in neo4j container logs: "Enhanced By DozerDB Plugin"
+  # To use another DB in neo4j: 
+  #  CREATE <db_name>
+  #  :USE <db_name>
+  
+  dozer-init:
+    image: alpine:latest
+    container_name: dozer-downloader
+    volumes:
+      - ./plugins:/plugins
+    # Downloads the JAR and sets permissions for the Neo4j user (7474)
+    # S Trottier - tested plugin v. 5.26.8 works with neo4j community 5.26.22
+    command: >
+      sh -c "wget -O /plugins/dozerdb-5.26.8.0.jar https://dist.dozerdb.org/dozerdb-plugin-5.26.8.0.jar && 
+             chown -R 7474:7474 /plugins"
+
   neo4j:
     image: neo4j:5-community
     container_name: neo4j
+    depends_on:
+      dozer-init:
+        condition: service_completed_successfully
     ports:
       - "7474:7474" # HTTP (Browser)
       - "7687:7687" # Bolt (Drivers/Applications)
@@ -529,11 +551,15 @@ services:
       - NEO4J_server_memory_heap_max__size=512M
       - NEO4J_server_memory_pagecache_size=512M
       
+      # 5. Tells Neo4j to load DozerDB into the core classpath
+      - CLASSPATH_PREFIX=/plugins/dozerdb-5.26.8.0.jar
+
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
       - neo4j_import:/var/lib/neo4j/import
-      - neo4j_plugins:/plugins
+      # Binding plugins directory (e.g. for DozerDB)
+      - ./plugins:/plugins
 
     # Standard Devilbox network (Change to 'default' if running standalone)
     networks:
@@ -640,4 +666,4 @@ volumes:
   neo4j_data:
   neo4j_logs:
   neo4j_import:
-  neo4j_plugins:
+  

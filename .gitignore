@@ -13,6 +13,8 @@
 # CUSTOM
 ######################################
 
+/plugins 
+
 # Ignore variable data
 /.env
 /backups/*
