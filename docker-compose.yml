@@ -517,11 +517,12 @@ services:
     # Downloads the JAR and sets permissions for the Neo4j user (7474)
     # S Trottier - tested plugin v. 5.26.8 works with neo4j community 5.26.22
     command: >
-      sh -c "wget -O /plugins/dozerdb-5.26.8.0.jar https://dist.dozerdb.org/dozerdb-plugin-5.26.8.0.jar && 
+      sh -c "wget -nc -O /plugins/dozerdb-5.26.8.0.jar https://dist.dozerdb.org/dozerdb-plugin-5.26.8.0.jar && 
              chown -R 7474:7474 /plugins"
 
   neo4j:
-    image: neo4j:5-community
+    # 5.26.8 est la dernière version de DozerDB disponible (25 mars 2026)
+    image: neo4j:5.26.8-community
     container_name: neo4j
     depends_on:
       dozer-init:
