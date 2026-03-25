@@ -565,21 +565,21 @@ services:
     networks:
       - app_net
 
-  node:
-    image: node:18-bookworm-slim
-    container_name: node
-    working_dir: /home/node
-    volumes:
-      # Bind mount
-      - ./data:/home/node/devilbox_data:rw
-      - node_named_volume:/home/node/
-    ports:
-      - "3000:3000"
-    command: tail -f /dev/null
-     # Standard Devilbox network (Change to 'default' if running standalone)
-    networks:
-      app_net:
-        ipv4_address: 172.16.238.17
+  # node:
+  #   image: node:18-bookworm-slim
+  #   container_name: node
+  #   working_dir: /home/node
+  #   volumes:
+  #     # Bind mount
+  #     - ./data:/home/node/devilbox_data:rw
+  #     - node_named_volume:/home/node/
+  #   ports:
+  #     - "3000:3000"
+  #   command: tail -f /dev/null
+  #    # Standard Devilbox network (Change to 'default' if running standalone)
+  #   networks:
+  #     app_net:
+  #       ipv4_address: 172.16.238.17
 
 ################################################################################
 # NETWORK
@@ -685,4 +685,4 @@ volumes:
   # ------------------------------------------------------------
   # Node.js
   # ------------------------------------------------------------
-  node_named_volume:
+  # node_named_volume:
