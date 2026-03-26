@@ -515,14 +515,17 @@ services:
     volumes:
       - ./plugins:/plugins
     # Downloads the JAR and sets permissions for the Neo4j user (7474)
+    # ATTENTION doit etre ajouté au CLASSPATH dans neo4j (plus bas)
     # S Trottier - tested plugin v. 5.26.8 works with neo4j community 5.26.22
+    #              mais erreur sur utilisation CONSTRAINT (Entreprise)
+    #              5.21.2 est le plus récent qui supporte les contraintes avec le plug-in
     command: >
-      sh -c "wget -nc -O /plugins/dozerdb-5.26.8.0.jar https://dist.dozerdb.org/dozerdb-plugin-5.26.8.0.jar && 
+      sh -c "rm /plugins/dozerdb*.jar &&
+             wget -nc -O /plugins/dozerdb-plugin-5.21.2.0-alpha.1.jar https://dist.dozerdb.org/dozerdb-plugin-5.21.2.0-alpha.1.jar && 
              chown -R 7474:7474 /plugins"
 
   neo4j:
-    # 5.26.8 est la dernière version de DozerDB disponible (25 mars 2026)
-    image: neo4j:5.26.8-community
+    image: neo4j:5.21.2-community
     container_name: neo4j
     depends_on:
       dozer-init:
@@ -542,8 +545,8 @@ services:
       - NEO4J_PLUGINS=["apoc"]
 
       # 3. APOC Security Settings (Required for many APOC functions)
-      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
-      - NEO4J_dbms_security_procedures_allowlist=apoc.*
+      - NEO4J_dbms_security_procedures_unrestricted=*
+      - NEO4J_dbms_security_procedures_allowlist=*
       - NEO4J_apoc_import_file_enabled=true
       - NEO4J_apoc_export_file_enabled=true
 
@@ -552,8 +555,8 @@ services:
       - NEO4J_server_memory_heap_max__size=512M
       - NEO4J_server_memory_pagecache_size=512M
       
-      # 5. Tells Neo4j to load DozerDB into the core classpath
-      - CLASSPATH_PREFIX=/plugins/dozerdb-5.26.8.0.jar
+      # Tells Neo4j to load DozerDB into the core classpath
+      - CLASSPATH_PREFIX=/plugins/dozerdb-plugin-5.21.2.0-alpha.1.jar
 
     volumes:
       - neo4j_data:/data
