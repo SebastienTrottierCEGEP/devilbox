@@ -520,7 +520,7 @@ services:
     #              mais erreur sur utilisation CONSTRAINT (Entreprise)
     #              5.21.2 est le plus récent qui supporte les contraintes avec le plug-in
     command: >
-      sh -c "rm /plugins/dozerdb*.jar &&
+      sh -c "rm -f /plugins/dozerdb*.jar &&
              wget -O /plugins/dozerdb-plugin-5.21.2.0-alpha.1.jar https://dist.dozerdb.org/dozerdb-plugin-5.21.2.0-alpha.1.jar && 
              chown -R 7474:7474 /plugins"
 
